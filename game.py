@@ -127,21 +127,29 @@ def start_gui():
                 threading.Thread(target=run_client, args=(ip_address,), daemon=True).start()
                 messagebox.showinfo("Client", f"Attempting to connect to server at {ip_address}")
 
+    def toggle_ip_entry():
+        if mode_var.get() == "client":
+            ip_entry_label.pack()
+            ip_entry.pack()
+        else:
+            ip_entry_label.pack_forget()
+            ip_entry.pack_forget()
+
     app = tk.Tk()
     app.title("Multiplayer Ping Pong")
 
     mode_var = tk.StringVar(value="server")
     tk.Label(app, text="Select Mode:").pack()
-    tk.Radiobutton(app, text="Server", variable=mode_var, value="server").pack()
-    tk.Radiobutton(app, text="Client", variable=mode_var, value="client").pack()
+    tk.Radiobutton(app, text="Server", variable=mode_var, value="server", command=toggle_ip_entry).pack()
+    tk.Radiobutton(app, text="Client", variable=mode_var, value="client", command=toggle_ip_entry).pack()
 
-    tk.Label(app, text="Server IP Address (for Client Mode):").pack()
+    ip_entry_label = tk.Label(app, text="Server IP Address (for Client Mode):")
     ip_entry = tk.Entry(app)
-    ip_entry.pack()
 
     start_button = tk.Button(app, text="Start Game", command=start_game)
     start_button.pack()
 
+    toggle_ip_entry()  # Set initial visibility
     app.mainloop()
 
 # Run the GUI to choose mode
