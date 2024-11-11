@@ -44,35 +44,30 @@ def run_server():
 
     def handle_client():
         global paddle1_y, paddle2_y, ball_x, ball_y, ball_dx, ball_dy
-        try:
-            while True:
+        while True:
+            try:
                 data = conn.recv(1024).decode()
                 if not data:
                     break
-                paddle2_y = int(data)
+                paddle2_y = int(data)  # Update paddle2 position from client
+
                 ball_x += ball_dx
                 ball_y += ball_dy
 
-                # Ball collision with top and bottom walls
                 if ball_y <= 0 or ball_y >= HEIGHT:
                     ball_dy *= -1
-
-                # Ball collision with paddles
                 if ball_x <= 40 and paddle1_y <= ball_y <= paddle1_y + PADDLE_HEIGHT:
                     ball_dx *= -1
                 if ball_x >= WIDTH - 40 and paddle2_y <= ball_y <= paddle2_y + PADDLE_HEIGHT:
                     ball_dx *= -1
-
-                # Ball out of bounds, reset position
                 if ball_x <= 0 or ball_x >= WIDTH:
-                    ball_x, ball_y = WIDTH // 2, HEIGHT // 2
+                    ball_x, ball_y = WIDTH // 2, HEIGHT // 2  # Reset ball
 
+                # Send updated game state to client
                 conn.send(f"{paddle1_y},{paddle2_y},{ball_x},{ball_y}".encode())
-        except:
-            print("[SERVER] Client disconnected.")
-        finally:
-            conn.close()
-            pygame.quit()
+            except:
+                break
+        conn.close()
 
     client_thread = threading.Thread(target=handle_client)
     client_thread.start()
@@ -82,7 +77,6 @@ def run_server():
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                conn.close()  # Close connection on server quit
                 pygame.quit()
                 return
         keys = pygame.key.get_pressed()
@@ -95,20 +89,14 @@ def run_server():
 # Client function
 def run_client(server_ip):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        client.connect((server_ip, SERVER_PORT))
-    except:
-        messagebox.showerror("Error", "Unable to connect to the server.")
-        return
-    
+    client.connect((server_ip, SERVER_PORT))
     global paddle1_y, paddle2_y, ball_x, ball_y
 
     clock = pygame.time.Clock()
     while True:
-        clock.tick(45)
+        clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                client.close()
                 pygame.quit()
                 return
         keys = pygame.key.get_pressed()
@@ -116,19 +104,14 @@ def run_client(server_ip):
             paddle2_y -= 5
         if keys[pygame.K_DOWN] and paddle2_y + PADDLE_HEIGHT + 5 < HEIGHT:
             paddle2_y += 5
+        client.send(str(paddle2_y).encode())  # Send paddle position to server
+
         try:
-            client.send(str(paddle2_y).encode())
-            game_state = client.recv(1024).decode()
-            if not game_state:
-                raise ConnectionError("Server closed the connection.")
+            game_state = client.recv(1024).decode()  # Receive updated game state
             paddle1_y, paddle2_y, ball_x, ball_y = map(int, game_state.split(","))
-        except (ConnectionError, OSError):
-            print("[CLIENT] Server disconnected or error occurred.")
+        except:
             break
         draw_window(paddle1_y, paddle2_y, ball_x, ball_y)
-
-    client.close()
-    pygame.quit()
 
 # Start the GUI
 def start_gui():
@@ -157,8 +140,9 @@ def start_gui():
     app = tk.Tk()
     app.title("Multiplayer Ping Pong")
 
-    app.geometry("200x200")
-
+    # Set the window size (modify as needed)
+    app.geometry("400x300")  # Width x Height of the GUI window
+    
     mode_var = tk.StringVar(value="server")
     tk.Label(app, text="Select Mode:").pack()
     tk.Radiobutton(app, text="Server", variable=mode_var, value="server", command=toggle_ip_entry).pack()
@@ -170,7 +154,7 @@ def start_gui():
     start_button = tk.Button(app, text="Start Game", command=start_game)
     start_button.pack()
 
-    toggle_ip_entry()  # Set initial visibility
+    toggle_ip_entry()  # Set initial visibility for IP entry
     app.mainloop()
 
 # Run the GUI to choose mode
