@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import messagebox
 import time
 
-#Test commit and push
+#Test 2 commit and push
 # Constants for the game
 WIDTH, HEIGHT = 800, 600
 BALL_RADIUS = 10
