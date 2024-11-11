@@ -1,7 +1,7 @@
 import socket
 import pygame
 import threading
-
+import time
 # Constants
 WIDTH, HEIGHT = 800, 600
 BALL_RADIUS = 10
