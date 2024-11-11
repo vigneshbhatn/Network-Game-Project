@@ -105,7 +105,7 @@ def run_client(server_ip):
 
     clock = pygame.time.Clock()
     while True:
-        clock.tick(60)
+        clock.tick(45)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 client.close()
