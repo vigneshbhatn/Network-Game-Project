@@ -3,6 +3,7 @@ import pygame
 import threading
 import tkinter as tk
 from tkinter import messagebox
+import time
 
 # Constants for the game
 WIDTH, HEIGHT = 800, 600
