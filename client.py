@@ -14,8 +14,8 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Client - Multiplayer Ping Pong")
 
 # Client setup
-SERVER_IP = "192.168.1.10"
-SERVER_PORT = 5000
+SERVER_IP = "192.168.92.120"
+SERVER_PORT = 5555
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((SERVER_IP, SERVER_PORT))
 
@@ -44,7 +44,7 @@ def main():
     clock = pygame.time.Clock()
 
     while run:
-        clock.tick(120)
+        clock.tick(60)
 
         # Event handling
         for event in pygame.event.get():
@@ -53,10 +53,10 @@ def main():
 
         # Player 2 movement
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP] and paddle2_y - 5 > 0:
-            paddle2_y -= 5
+        if keys[pygame.K_UP] and paddle2_y - 8 > 0:
+            paddle2_y -= 8
         if keys[pygame.K_DOWN] and paddle2_y + PADDLE_HEIGHT + 5 < HEIGHT:
-            paddle2_y += 5
+            paddle2_y += 8
 
         # Send Player 2's paddle position to the server
         client.send(str(paddle2_y).encode())
