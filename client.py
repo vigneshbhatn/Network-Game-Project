@@ -96,7 +96,7 @@ pygame.display.set_caption("Client - UDP Multiplayer Ping Pong")
 FONT = pygame.font.SysFont(None, 50)
 
 # Client setup
-SERVER_IP = "192.168.92.120"  # Replace with the actual server IP address
+SERVER_IP = "192.168.1.5"  # Replace with the actual server IP address
 SERVER_PORT = 5555
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
