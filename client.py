@@ -137,7 +137,7 @@ def main():
     clock = pygame.time.Clock()
 
     while run:
-        clock.tick(60)
+        clock.tick(45)
 
         # Event handling
         for event in pygame.event.get():
