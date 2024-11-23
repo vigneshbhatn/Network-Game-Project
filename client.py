@@ -90,7 +90,7 @@ BLACK = (0, 0, 0)
 # Initialize pygame
 pygame.init()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Client - Multiplayer Ping Pong")
+pygame.display.set_caption("Client - UDP Multiplayer Ping Pong")
 
 # Font for score display
 FONT = pygame.font.SysFont(None, 50)
@@ -98,8 +98,7 @@ FONT = pygame.font.SysFont(None, 50)
 # Client setup
 SERVER_IP = "192.168.92.120"  # Replace with the actual server IP address
 SERVER_PORT = 5555
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((SERVER_IP, SERVER_PORT))
+client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Game variables
 paddle1_y, paddle2_y, ball_x, ball_y = HEIGHT // 2, HEIGHT // 2, WIDTH // 2, HEIGHT // 2
@@ -152,12 +151,12 @@ def main():
             paddle2_y += 8
 
         # Send Player 2's paddle position to the server
-        client.send(str(paddle2_y).encode())
-
-        # Receive updated game state from the server
         try:
-            game_state = client.recv(1024).decode()
-            paddle1_y, paddle2_y, ball_x, ball_y, score1, score2 = map(int, game_state.split(","))
+            client.sendto(str(paddle2_y).encode(), (SERVER_IP, SERVER_PORT))
+
+            # Receive updated game state from the server
+            data, _ = client.recvfrom(1024)
+            paddle1_y, paddle2_y, ball_x, ball_y, score1, score2 = map(int, data.decode().split(","))
         except:
             pass
 
@@ -169,4 +168,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
